@@ -190,8 +190,14 @@ function report = test_aptos_image(imagePath)
 
     % Panel 1: Original Fundus with Landmarks
     subplot(2, 2, 1);
-    imshow(img); hold on;
-    viscircles(opticDisc, odRadiusPx, 'Color', 'c', 'LineWidth', 1.8, 'LineStyle', '--');
+    if exist('imshow', 'file') == 2
+        imshow(img);
+    else
+        image(img);
+        axis image;
+    end
+    hold on;
+    draw_circle_compat(opticDisc, odRadiusPx, 'Color', 'c', 'LineWidth', 1.8, 'LineStyle', '--');
     plot(opticDisc(1), opticDisc(2), 'c+', 'MarkerSize', 12, 'LineWidth', 2);
     plot(fovea(1), fovea(2), 'y*', 'MarkerSize', 14, 'LineWidth', 2);
     title('1. Original Fundus & Anatomical Landmarks', 'Color', 'w', 'FontSize', 11, 'FontWeight', 'bold');
@@ -223,7 +229,11 @@ function report = test_aptos_image(imagePath)
     overlayImg(:, :, 1) = overlayImg(:, :, 1) .* (1 - 0.85*nvMask) + 0.0 * 0.85 * nvMask;
     overlayImg(:, :, 2) = overlayImg(:, :, 2) .* (1 - 0.85*nvMask) + 1.0 * 0.85 * nvMask;
     overlayImg(:, :, 3) = overlayImg(:, :, 3) .* (1 - 0.85*nvMask) + 0.35 * 0.85 * nvMask;
-    imshow(overlayImg);
+    if exist('imshow', 'file') == 2
+        imshow(overlayImg);
+    else
+        image(overlayImg); axis image; axis off;
+    end
     title('2. Multi-Class Pixel Segmentation Overlay', 'Color', 'w', 'FontSize', 11, 'FontWeight', 'bold');
 
     % Panel 3: Bright Lesions Channel (Hard vs Soft Exudates)
@@ -232,7 +242,11 @@ function report = test_aptos_image(imagePath)
     brightCanvas(:, :, 1) = hardExMask * 1.0 + softExMask * 0.8;
     brightCanvas(:, :, 2) = hardExMask * 0.85 + softExMask * 0.95;
     brightCanvas(:, :, 3) = hardExMask * 0.0 + softExMask * 1.0;
-    imshow(brightCanvas);
+    if exist('imshow', 'file') == 2
+        imshow(brightCanvas);
+    else
+        image(brightCanvas); axis image; axis off;
+    end
     title('3. Bright Lesions Channel (EX [Gold] vs SE [Cyan])', 'Color', 'w', 'FontSize', 11, 'FontWeight', 'bold');
 
     % Panel 4: Dark & Vascular Lesions (MAs, Hemorrhages, NV)
@@ -241,7 +255,11 @@ function report = test_aptos_image(imagePath)
     darkCanvas(:, :, 1) = heMask * 0.9 + maMask * 1.0 + nvMask * 0.0;
     darkCanvas(:, :, 2) = heMask * 0.1 + maMask * 0.0 + nvMask * 1.0;
     darkCanvas(:, :, 3) = heMask * 0.1 + maMask * 1.0 + nvMask * 0.35;
-    imshow(darkCanvas);
+    if exist('imshow', 'file') == 2
+        imshow(darkCanvas);
+    else
+        image(darkCanvas); axis image; axis off;
+    end
     title('4. Dark & Vascular Channel (MA [Magenta], HE [Red], NV [Lime])', 'Color', 'w', 'FontSize', 11, 'FontWeight', 'bold');
 
     scaleSq = scaleMicronsPerPx^2;
@@ -252,4 +270,19 @@ function report = test_aptos_image(imagePath)
 
     saveas(figBreakdown, sprintf('aptos_%s_segmentation_breakdown_matlab.png', baseName));
     fprintf('Saved segmentation breakdown figure to: aptos_%s_segmentation_breakdown_matlab.png\n', baseName);
+end
+
+function h = draw_circle_compat(centers, radii, varargin)
+% DRAW_CIRCLE_COMPAT - Base MATLAB fallback for circle drawing (no toolbox required)
+    hold on;
+    theta = linspace(0, 2*pi, 180);
+    h = [];
+    for k = 1:size(centers, 1)
+        c = centers(k, :);
+        r = radii(min(k, end));
+        x = c(1) + r * cos(theta);
+        y = c(2) + r * sin(theta);
+        hp = plot(x, y, varargin{:});
+        h = [h; hp]; %#ok<AGROW>
+    end
 end

@@ -78,13 +78,19 @@ function benchmarks = validate_lesion_segmentation_performance()
     % Panel 3: Simulated Lesion Patch
     subplot(2, 2, 3);
     patchImg = repmat(reshape([0.35, 0.14, 0.08], 1, 1, 3), 256, 256);
-    imshow(patchImg); hold on;
+    if exist('imshow', 'file') == 2
+        imshow(patchImg);
+    else
+        image(patchImg);
+        axis image;
+    end
+    hold on;
     % Hemorrhage circle
-    viscircles([80, 140], 16, 'Color', 'r', 'LineWidth', 2);
-    viscircles([82, 139], 15, 'Color', 'w', 'LineStyle', '--', 'LineWidth', 1.5);
+    draw_circle_compat([80, 140], 16, 'Color', 'r', 'LineWidth', 2);
+    draw_circle_compat([82, 139], 15, 'Color', 'w', 'LineStyle', '--', 'LineWidth', 1.5);
     % Microaneurysm
     plot(170, 90, 'mo', 'MarkerFaceColor', 'm', 'MarkerSize', 8);
-    viscircles([170, 90], 5, 'Color', 'w', 'LineStyle', '--', 'LineWidth', 1.5);
+    draw_circle_compat([170, 90], 5, 'Color', 'w', 'LineStyle', '--', 'LineWidth', 1.5);
     % Neovascularization
     rectangle('Position', [125, 198, 80, 6], 'Curvature', 0.5, 'EdgeColor', [0 1 0.3], 'FaceColor', [0 1 0.3], 'LineWidth', 1.5);
     rectangle('Position', [120, 197, 90, 8], 'Curvature', 0.5, 'EdgeColor', 'w', 'LineStyle', '--', 'LineWidth', 1.2);
@@ -129,4 +135,19 @@ function benchmarks = validate_lesion_segmentation_performance()
     benchmarks.sensitivity = sensVals;
     benchmarks.precision = precVals;
     benchmarks.specificity = specVals;
+end
+
+function h = draw_circle_compat(centers, radii, varargin)
+% DRAW_CIRCLE_COMPAT - Base MATLAB fallback for circle drawing (no toolbox required)
+    hold on;
+    theta = linspace(0, 2*pi, 180);
+    h = [];
+    for k = 1:size(centers, 1)
+        c = centers(k, :);
+        r = radii(min(k, end));
+        x = c(1) + r * cos(theta);
+        y = c(2) + r * sin(theta);
+        hp = plot(x, y, varargin{:});
+        h = [h; hp]; %#ok<AGROW>
+    end
 end

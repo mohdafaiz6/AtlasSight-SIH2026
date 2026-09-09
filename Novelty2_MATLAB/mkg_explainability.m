@@ -200,15 +200,20 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
     subplot(1, 2, 1);
     hold on;
     if ~isempty(fundusImg)
-        imshow(fundusImg);
+        if exist('imshow', 'file') == 2
+            imshow(fundusImg);
+        else
+            image(fundusImg);
+            axis image;
+        end
     else
         % Draw synthetic canvas
-        viscircles(fovea, 900, 'Color', [0.3 0.1 0.1], 'LineWidth', 1);
+        draw_circle_compat(fovea, 900, 'Color', [0.3 0.1 0.1], 'LineWidth', 1);
         set(gca, 'Color', 'k', 'XLim', [0, 2048], 'YLim', [0, 1536], 'YDir', 'reverse');
     end
 
     % Draw Optic Disc
-    viscircles(opticDisc, odRadiusPx, 'Color', 'c', 'LineWidth', 2);
+    draw_circle_compat(opticDisc, odRadiusPx, 'Color', 'c', 'LineWidth', 2);
     text(opticDisc(1), opticDisc(2) - odRadiusPx - 20, 'Optic Disc (1 DD = 1500 µm)', ...
          'Color', 'c', 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
 
@@ -218,11 +223,11 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
 
     % 500 µm ETDRS circle
     r500Px = CSME_LIMIT_MICRONS / scaleMicronsPerPixel;
-    viscircles(fovea, r500Px, 'Color', 'r', 'LineStyle', '--', 'LineWidth', 2);
+    draw_circle_compat(fovea, r500Px, 'Color', 'r', 'LineStyle', '--', 'LineWidth', 2);
 
     % 1500 µm (1 DD) Macula circle
     r1500Px = MACULA_RADIUS_MICRONS / scaleMicronsPerPixel;
-    viscircles(fovea, r1500Px, 'Color', [1 0.5 0], 'LineStyle', ':', 'LineWidth', 1.5);
+    draw_circle_compat(fovea, r1500Px, 'Color', [1 0.5 0], 'LineStyle', ':', 'LineWidth', 1.5);
 
     % Plot lesions
     for i = 1:numLesions
@@ -255,4 +260,19 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
               'LineWidth', 1.8, 'NodeFontSize', 9, 'NodeFontWeight', 'bold');
     title('Medical Knowledge Graph (Deduction DAG)', 'FontSize', 12, 'FontWeight', 'bold');
     axis off;
+end
+
+function h = draw_circle_compat(centers, radii, varargin)
+% DRAW_CIRCLE_COMPAT - Base MATLAB fallback for circle drawing (no toolbox required)
+    hold on;
+    theta = linspace(0, 2*pi, 180);
+    h = [];
+    for k = 1:size(centers, 1)
+        c = centers(k, :);
+        r = radii(min(k, end));
+        x = c(1) + r * cos(theta);
+        y = c(2) + r * sin(theta);
+        hp = plot(x, y, varargin{:});
+        h = [h; hp]; %#ok<AGROW>
+    end
 end
