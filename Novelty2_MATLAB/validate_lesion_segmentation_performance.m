@@ -95,9 +95,9 @@ function benchmarks = validate_lesion_segmentation_performance()
     rectangle('Position', [125, 198, 80, 6], 'Curvature', 0.5, 'EdgeColor', [0 1 0.3], 'FaceColor', [0 1 0.3], 'LineWidth', 1.5);
     rectangle('Position', [120, 197, 90, 8], 'Curvature', 0.5, 'EdgeColor', 'w', 'LineStyle', '--', 'LineWidth', 1.2);
 
-    text(80, 175, 'Hemorrhage (Red)\nDice: 0.841', 'Color', 'w', 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
-    text(170, 65, 'Microaneurysm (Magenta)\nDice: 0.768', 'Color', [1 0.5 0.8], 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
-    text(165, 220, 'Neovascularization (Lime)\nDice: 0.742', 'Color', [0.4 1 0.6], 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+    text(80, 175, {'Hemorrhage (Red)', 'Dice: 0.841'}, 'Color', 'w', 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+    text(170, 65, {'Microaneurysm (Magenta)', 'Dice: 0.768'}, 'Color', [1 0.5 0.8], 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+    text(165, 220, {'Neovascularization (Lime)', 'Dice: 0.742'}, 'Color', [0.4 1 0.6], 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
     title('C. Pixel Mask Alignment (Color = Pred, White Dash = GT)', 'Color', 'w', 'FontSize', 11, 'FontWeight', 'bold');
 
     % Panel 4: PS Compliance Scorecard

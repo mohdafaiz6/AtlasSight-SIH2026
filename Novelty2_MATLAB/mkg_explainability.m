@@ -194,10 +194,11 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
     report.criticalCSMELesions = criticalCSMELesions;
 
     %% 6. Dual Visualization in MATLAB
-    figure('Name', 'MKG Explainability & ETDRS CSME Analysis', 'Color', 'w', 'Position', [100, 100, 1400, 600]);
+    figure('Name', 'MKG Explainability & ETDRS CSME Analysis', 'Color', [0.08 0.08 0.08], 'Position', [100, 100, 1400, 600]);
 
     % Subplot 1: Fundus & Distance Geometry
     subplot(1, 2, 1);
+    set(gca, 'Color', [0.08 0.08 0.08]);
     hold on;
     if ~isempty(fundusImg)
         if exist('imshow', 'file') == 2
@@ -208,8 +209,8 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
         end
     else
         % Draw synthetic canvas
-        draw_circle_compat(fovea, 900, 'Color', [0.3 0.1 0.1], 'LineWidth', 1);
-        set(gca, 'Color', 'k', 'XLim', [0, 2048], 'YLim', [0, 1536], 'YDir', 'reverse');
+        draw_circle_compat(fovea, 900, 'Color', [0.45 0.18 0.18], 'LineWidth', 1.5);
+        set(gca, 'Color', [0.08 0.08 0.08], 'XLim', [0, 2048], 'YLim', [0, 1536], 'YDir', 'reverse');
     end
 
     % Draw Optic Disc
@@ -250,15 +251,19 @@ function [report, G] = mkg_explainability(fovea, opticDisc, odRadiusPx, lesions,
             plot(lx, ly, 'mo', 'MarkerFaceColor', 'm', 'MarkerSize', 6);
         end
     end
-    title('Retinal Topography & ETDRS CSME Distance Analysis', 'FontSize', 12, 'FontWeight', 'bold');
+    title('Retinal Topography & ETDRS CSME Distance Analysis', 'Color', 'w', 'FontSize', 12, 'FontWeight', 'bold');
     axis off;
 
     % Subplot 2: Native Digraph Layout
     subplot(1, 2, 2);
+    set(gca, 'Color', [0.08 0.08 0.08]);
     hG = plot(G, 'Layout', 'layered', 'Direction', 'right', 'ArrowSize', 14, ...
-              'MarkerSize', 8, 'NodeColor', [0.2 0.6 0.8], 'EdgeColor', [0.8 0.2 0.2], ...
-              'LineWidth', 1.8, 'NodeFontSize', 9, 'NodeFontWeight', 'bold');
-    title('Medical Knowledge Graph (Deduction DAG)', 'FontSize', 12, 'FontWeight', 'bold');
+              'MarkerSize', 9, 'NodeColor', [0 0.85 1], 'EdgeColor', [1 0.45 0.35], ...
+              'LineWidth', 2.0, 'NodeFontSize', 9.5, 'NodeFontWeight', 'bold');
+    if isprop(hG, 'NodeLabelColor')
+        hG.NodeLabelColor = [0.9 0.95 1];
+    end
+    title('Medical Knowledge Graph (Deduction DAG)', 'Color', 'w', 'FontSize', 12, 'FontWeight', 'bold');
     axis off;
 end
 
