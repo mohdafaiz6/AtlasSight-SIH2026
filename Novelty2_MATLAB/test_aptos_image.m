@@ -286,3 +286,23 @@ function h = draw_circle_compat(centers, radii, varargin)
         h = [h; hp]; %#ok<AGROW>
     end
 end
+
+function q = prctile(x, p)
+% PRCTILE - Pure base MATLAB implementation of prctile without Statistics Toolbox
+    x = x(~isnan(x));
+    if isempty(x)
+        q = NaN;
+        return;
+    end
+    x = sort(x(:));
+    N = length(x);
+    if N == 1
+        q = x(1);
+        return;
+    end
+    idx = 1 + (N - 1) * (p / 100);
+    i_low = max(floor(idx), 1);
+    i_high = min(ceil(idx), N);
+    weight = idx - i_low;
+    q = (1 - weight) * x(i_low) + weight * x(i_high);
+end
